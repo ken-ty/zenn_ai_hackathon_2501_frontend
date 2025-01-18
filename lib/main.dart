@@ -31,6 +31,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  //pop up text
+  void _popuptext() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Center(child: AlertDialog(title: Text('あなたの勝ちです')));
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // 画面サイズを取得
@@ -50,11 +60,22 @@ class _MyHomePageState extends State<MyHomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Image.asset('images/digidepo_1312245_00000010.jpg',
-                    width: screenWidth * 0.4, height: screenHeight * 0.4),
+                // tap to open image
+                InkWell(
+                  onTap: () {
+                    _popuptext();
+                  },
+                  child: Image.asset('images/digidepo_1312245_00000010.jpg',
+                      width: screenWidth * 0.4, height: screenHeight * 0.4),
+                ),
                 SizedBox(height: screenWidth * 0.05),
-                Image.asset('images/digidepo_1312240_00000005.jpg',
-                    width: screenWidth * 0.4, height: screenHeight * 0.4)
+                InkWell(
+                  onTap: () {
+                    _popuptext();
+                  },
+                  child: Image.asset('images/digidepo_1312240_00000005.jpg',
+                      width: screenWidth * 0.4, height: screenHeight * 0.4),
+                )
               ],
             ),
           ],
