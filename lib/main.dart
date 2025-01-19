@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zenn_ai_hackathon_2501_frontend/models/image_data.dart';
 import 'package:zenn_ai_hackathon_2501_frontend/models/image_origin.dart';
+import 'package:zenn_ai_hackathon_2501_frontend/models/judement.dart';
 import 'package:zenn_ai_hackathon_2501_frontend/widgets/image_display.dart';
 
 void main() {
@@ -35,11 +36,17 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   //pop up text
-  void _popuptext() {
+  void _popUpText(ImageOrigin origin) {
+    String _text = '';
+    if (Judgment.judgeGameResult(origin) == GameResult.win) {
+      _text = 'あなたの勝ちです';
+    } else {
+      _text = 'あなたの負けです';
+    }
     showDialog(
       context: context,
       builder: (context) {
-        return Center(child: AlertDialog(title: Text('あなたの勝ちです')));
+        return Center(child: AlertDialog(title: Text(_text)));
       },
     );
   }
@@ -69,12 +76,16 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 // tap to open image
                 ImageDisplay(
-                    onTap: _popuptext,
+                    onTap: () {
+                      _popUpText(imageMadeByHuman.origin);
+                    },
                     screenSize: MediaQuery.of(context).size,
                     path: imageMadeByHuman.path!),
                 // SizedBox(height: screenWidth * 0.05),
                 ImageDisplay(
-                    onTap: _popuptext,
+                    onTap: () {
+                      _popUpText(imageMadeByAI.origin);
+                    },
                     screenSize: MediaQuery.of(context).size,
                     path: imageMadeByAI.path!),
               ],
