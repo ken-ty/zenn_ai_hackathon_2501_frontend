@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zenn_ai_hackathon_2501_frontend/widgets/image_display.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,8 +45,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     // 画面サイズを取得
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       appBar: AppBar(
@@ -61,21 +60,15 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 // tap to open image
-                InkWell(
-                  onTap: () {
-                    _popuptext();
-                  },
-                  child: Image.asset('images/digidepo_1312245_00000010.jpg',
-                      width: screenWidth * 0.4, height: screenHeight * 0.4),
-                ),
-                SizedBox(height: screenWidth * 0.05),
-                InkWell(
-                  onTap: () {
-                    _popuptext();
-                  },
-                  child: Image.asset('images/digidepo_1312240_00000005.jpg',
-                      width: screenWidth * 0.4, height: screenHeight * 0.4),
-                )
+                ImageDisplay(
+                    onTap: _popuptext,
+                    screenSize: MediaQuery.of(context).size,
+                    path: 'images/digidepo_1312245_00000010.jpg'),
+                // SizedBox(height: screenWidth * 0.05),
+                ImageDisplay(
+                    onTap: _popuptext,
+                    screenSize: MediaQuery.of(context).size,
+                    path: 'images/digidepo_1312240_00000005.jpg'),
               ],
             ),
           ],
