@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:zenn_ai_hackathon_2501_frontend/models/image_data.dart';
+import 'package:zenn_ai_hackathon_2501_frontend/models/image_origin.dart';
 import 'package:zenn_ai_hackathon_2501_frontend/widgets/image_display.dart';
 
 void main() {
@@ -44,7 +46,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // 画面サイズを取得
+    // 仮でモデルを定義している
+    final imageMadeByHuman = ImageData(
+        path: 'images/digidepo_1312245_00000010.jpg',
+        origin: ImageOrigin.madebyhuman);
+    final imageMadeByAI = ImageData(
+        path: 'images/digidepo_1312240_00000005.jpg',
+        origin: ImageOrigin.madebyAI);
 
     return Scaffold(
       appBar: AppBar(
@@ -63,12 +71,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 ImageDisplay(
                     onTap: _popuptext,
                     screenSize: MediaQuery.of(context).size,
-                    path: 'images/digidepo_1312245_00000010.jpg'),
+                    path: imageMadeByHuman.path!),
                 // SizedBox(height: screenWidth * 0.05),
                 ImageDisplay(
                     onTap: _popuptext,
                     screenSize: MediaQuery.of(context).size,
-                    path: 'images/digidepo_1312240_00000005.jpg'),
+                    path: imageMadeByAI.path!),
               ],
             ),
           ],

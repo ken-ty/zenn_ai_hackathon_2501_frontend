@@ -41,12 +41,21 @@ class _ImageDisplayState extends State<ImageDisplay> {
     final screenHeight =
         _currentScreenSize?.height ?? MediaQuery.of(context).size.height;
 
-    return InkWell(
-      onTap: () {
-        widget.onTap!();
-      },
-      child: Image.asset(widget.path,
-          width: screenWidth * 0.4, height: screenHeight * 0.4),
+    if (widget.path.isEmpty) {
+      return const SizedBox();
+    }
+    return GestureDetector(
+      // InkWell より軽量な GestureDetector を使用
+      onTap: widget.onTap == null ? null : widget.onTap!, // 安全なnullチェック
+      child: Image.asset(
+        widget.path,
+        width: screenWidth * 0.4,
+        height: screenHeight * 0.4,
+        errorBuilder: (context, error, stackTrace) {
+          // エラーハンドリング
+          return const Center(child: Text('画像読み込みエラー')); // エラー時に表示するWidget
+        },
+      ),
     );
   }
 }
