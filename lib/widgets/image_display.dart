@@ -45,15 +45,13 @@ class _ImageDisplayState extends State<ImageDisplay> {
       return const SizedBox();
     }
     return GestureDetector(
-      // InkWell より軽量な GestureDetector を使用
-      onTap: widget.onTap == null ? null : widget.onTap!, // 安全なnullチェック
-      child: Image.asset(
+      onTap: widget.onTap == null ? null : widget.onTap!,
+      child: Image.network(
         widget.path,
         width: screenWidth * 0.4,
         height: screenHeight * 0.4,
         errorBuilder: (context, error, stackTrace) {
-          // エラーハンドリング
-          return const Center(child: Text('画像読み込みエラー')); // エラー時に表示するWidget
+          return const Center(child: Text('画像読み込みエラー'));
         },
       ),
     );
