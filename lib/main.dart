@@ -51,15 +51,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Improved _processQuestions to handle potential errors and data structure
-  Future<Question?> _processQuestions() async {
+  Future<Question?> _processQuestions(int id) async {
     try {
       List<Question> questions = await fetchQuestions();
-      if (questions.isNotEmpty) {
-        return questions.first; // Assuming there's at least one question
-      } else {
-        print('質問リストが空です');
-        return null; // Indicate no questions available
-      }
+      return questions[id];
     } catch (error) {
       print('Error fetching questions: $error');
       return null; // Handle errors gracefully
@@ -68,8 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Fetch questions asynchronously using FutureBuilder
-    Future<Question?> questionFuture = _processQuestions();
+    int id = 0;
 
     return Scaffold(
       appBar: AppBar(
@@ -77,50 +71,65 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            FutureBuilder<Question?>(
-              future: questionFuture,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final question = snapshot.data!;
-                  final firstAnswer = question.answers[0];
-                  final secondAnswer = question.answers[1];
-                  return Column(
-                    children: [
-                      Text(question.title),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        child: StatefulBuilder(
+          // StatefulBuilderで囲む
+          builder: (BuildContext context, StateSetter setState) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                FutureBuilder<Question?>(
+                  future: _processQuestions(id),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final question = snapshot.data!;
+                      final firstAnswer = question.answers[0];
+                      final secondAnswer = question.answers[1];
+
+                      return Column(
                         children: [
-                          // Image made by human
-                          ImageDisplay(
-                            onTap: () => _popUpText(firstAnswer.pictureTitle),
-                            screenSize: MediaQuery.of(context).size,
-                            path: firstAnswer.pictureResizePath,
+                          Text(question.title),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ImageDisplay(
+                                onTap: () {
+                                  _popUpText(firstAnswer.pictureTitle);
+                                  setState(() {
+                                    id++;
+                                  });
+                                },
+                                screenSize: MediaQuery.of(context).size,
+                                path: firstAnswer.pictureResizePath,
+                              ),
+                              SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.width * 0.05),
+                              ImageDisplay(
+                                onTap: () {
+                                  _popUpText(secondAnswer.pictureTitle);
+                                  setState(() {
+                                    id++;
+                                  });
+                                },
+                                screenSize: MediaQuery.of(context).size,
+                                path: secondAnswer.pictureResizePath,
+                              ),
+                            ],
                           ),
-                          SizedBox(
-                              height: MediaQuery.of(context).size.width * 0.05),
-                          // Image made by AI
-                          ImageDisplay(
-                            onTap: () => _popUpText(secondAnswer.pictureTitle),
-                            screenSize: MediaQuery.of(context).size,
-                            path: secondAnswer.pictureResizePath,
-                          ),
+                          Text(question.description),
                         ],
-                      ),
-                      Text(question.description),
-                    ],
-                  );
-                } else if (snapshot.hasError) {
-                  return Text(
-                      'Error: ${snapshot.error}'); // Display error message
-                } else {
-                  return const CircularProgressIndicator(); // Show loading indicator
-                }
-              },
-            ),
-          ],
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text(
+                          'Error: ${snapshot.error}'); // Display error message
+                    } else {
+                      return const CircularProgressIndicator(); // Show loading indicator
+                    }
+                  },
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
