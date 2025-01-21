@@ -45,7 +45,12 @@ class _MyHomePageState extends State<MyHomePage> {
     showDialog(
       context: context,
       builder: (context) {
-        return Center(child: AlertDialog(title: Text(text)));
+        return Center(
+            child: AlertDialog(
+                title: Text(
+          text,
+          textAlign: TextAlign.center,
+        )));
       },
     );
   }
