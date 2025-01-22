@@ -41,16 +41,26 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // Pop-up text
-  void _popUpText(String text) {
-    showDialog(
+  Future<void> _popUpText(Answer answer) async {
+    // Future<void> を返すように変更
+    return showDialog<void>(
       context: context,
       builder: (context) {
-        return Center(
-            child: AlertDialog(
-                title: Text(
-          text,
-          textAlign: TextAlign.center,
-        )));
+        return AlertDialog(
+          title: Text(
+            answer.pictureTitle,
+            textAlign: TextAlign.center,
+          ),
+          content: Image.network(answer.pictureOriginalPath),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Center(child: const Text('閉じる')),
+            ),
+          ],
+        );
       },
     );
   }
@@ -98,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             children: [
                               ImageDisplay(
                                 onTap: () {
-                                  _popUpText(firstAnswer.pictureTitle);
+                                  _popUpText(firstAnswer);
                                   setState(() {
                                     id++;
                                   });
@@ -110,8 +120,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   height:
                                       MediaQuery.of(context).size.width * 0.05),
                               ImageDisplay(
-                                onTap: () {
-                                  _popUpText(secondAnswer.pictureTitle);
+                                onTap: () async {
+                                  await _popUpText(secondAnswer);
                                   setState(() {
                                     id++;
                                   });
