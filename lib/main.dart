@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:zenn_ai_hackathon_2501_frontend/models/question.dart';
 import 'package:zenn_ai_hackathon_2501_frontend/services/question_service.dart';
+import 'package:zenn_ai_hackathon_2501_frontend/utils/popup_utils.dart';
 import 'package:zenn_ai_hackathon_2501_frontend/widgets/image_display.dart';
 
 Future main() async {
@@ -40,31 +41,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // Pop-up text
-  Future<void> _popUpText(Answer answer) async {
-    // Future<void> を返すように変更
-    return showDialog<void>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            answer.pictureTitle,
-            textAlign: TextAlign.center,
-          ),
-          content: Image.network(answer.pictureOriginalPath),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Center(child: const Text('閉じる')),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   // Improved _processQuestions to handle potential errors and data structure
   Future<Question?> _processQuestions(int id) async {
     try {
@@ -107,8 +83,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               ImageDisplay(
-                                onTap: () {
-                                  _popUpText(firstAnswer);
+                                onTap: () async {
+                                  await showPopup(context, firstAnswer);
                                   setState(() {
                                     id++;
                                   });
@@ -121,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       MediaQuery.of(context).size.width * 0.05),
                               ImageDisplay(
                                 onTap: () async {
-                                  await _popUpText(secondAnswer);
+                                  await showPopup(context, secondAnswer);
                                   setState(() {
                                     id++;
                                   });
