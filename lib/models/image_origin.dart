@@ -1,4 +1,0 @@
-enum ImageOrigin {
-  madebyhuman,
-  madebyAI,
-}
