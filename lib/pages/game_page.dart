@@ -4,6 +4,7 @@ import 'package:zenn_ai_hackathon_2501_frontend/pages/game_result_page.dart';
 import 'package:zenn_ai_hackathon_2501_frontend/services/question_service.dart';
 import 'package:zenn_ai_hackathon_2501_frontend/utils/popup_utils.dart';
 import 'package:zenn_ai_hackathon_2501_frontend/widgets/image_display.dart';
+import 'package:zenn_ai_hackathon_2501_frontend/widgets/lottie_animation.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({Key? key, required this.title}) : super(key: key);
@@ -62,6 +63,9 @@ class GamePageState extends State<GamePage> {
                                   await showPopup(context, firstAnswer);
                                   _totalQuestions += 1;
                                   if (firstAnswer.isCorrect) {
+                                    LottieAnimation(
+                                      assetPath: 'assets/lottie_animation.json',
+                                    );
                                     _trueAnswers += 1;
                                   }
                                   setState(() {
