@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:zenn_ai_hackathon_2501_frontend/main.dart';
 import 'package:zenn_ai_hackathon_2501_frontend/models/question.dart';
 import 'package:zenn_ai_hackathon_2501_frontend/services/question_service.dart';
 import 'package:zenn_ai_hackathon_2501_frontend/utils/popup_utils.dart';
 import 'package:zenn_ai_hackathon_2501_frontend/widgets/image_display.dart';
+
+class GameScreen extends StatefulWidget {
+  const GameScreen({Key? key, required this.title}) : super(key: key);
+
+  final String title;
+
+  @override
+  State<GameScreen> createState() => GameScreenState();
+}
 
 class GameScreenState extends State<GameScreen> {
   Future<Question?> _processQuestions(int id) async {
