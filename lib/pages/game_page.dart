@@ -4,7 +4,6 @@ import 'package:zenn_ai_hackathon_2501_frontend/pages/game_result_page.dart';
 import 'package:zenn_ai_hackathon_2501_frontend/services/question_service.dart';
 import 'package:zenn_ai_hackathon_2501_frontend/utils/popup_utils.dart';
 import 'package:zenn_ai_hackathon_2501_frontend/widgets/image_display.dart';
-import 'package:zenn_ai_hackathon_2501_frontend/widgets/lottie_animation.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({Key? key, required this.title}) : super(key: key);
@@ -12,113 +11,86 @@ class GamePage extends StatefulWidget {
   final String title;
 
   @override
-  State<GamePage> createState() => GamePageState();
+  State<GamePage> createState() => _GamePageState();
 }
 
-class GamePageState extends State<GamePage> {
-  Future<Question?> _processQuestions(int id) async {
+class _GamePageState extends State<GamePage> {
+  int _totalQuestions = 0;
+  int _trueAnswers = 0;
+  int _currentQuestionId = 0;
+
+  Future<Question?> _fetchQuestion(int id) async {
     try {
-      List<Question> questions = await fetchQuestions();
+      final questions = await fetchQuestions();
       return questions[id];
     } catch (error) {
       print('Error fetching questions: $error');
-      return null; // Handle errors gracefully
+      return null;
     }
   }
 
-  int _totalQuestions = 0;
-  int _trueAnswers = 0;
+  void _handleAnswerTap(Answer answer) async {
+    await showPopup(context, answer);
+    setState(() {
+      _totalQuestions++;
+      if (answer.isCorrect) _trueAnswers++;
+      _currentQuestionId++;
+    });
+  }
+
+  void _navigateToResultPage() {
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (context) => GameResultPage(
+          trueAnswers: _trueAnswers,
+          totalQuestions: _totalQuestions,
+        ),
+      ),
+      (Route<dynamic> route) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    int id = 0;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueGrey[700],
         title: Text(widget.title),
       ),
       body: Center(
-        child: StatefulBuilder(
-          // StatefulBuilderで囲む
-          builder: (BuildContext context, StateSetter setState) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                FutureBuilder<Question?>(
-                  future: _processQuestions(id),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      final question = snapshot.data!;
-                      final firstAnswer = question.answers[0];
-                      final secondAnswer = question.answers[1];
-                      return Column(
-                        children: [
-                          Text(question.title),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ImageDisplay(
-                                onTap: () async {
-                                  await showPopup(context, firstAnswer);
-                                  _totalQuestions += 1;
-                                  if (firstAnswer.isCorrect) {
-                                    LottieAnimation(
-                                      assetPath: 'assets/lottie_animation.json',
-                                    );
-                                    _trueAnswers += 1;
-                                  }
-                                  setState(() {
-                                    id++;
-                                  });
-                                },
-                                screenSize: MediaQuery.of(context).size,
-                                path: firstAnswer.pictureResizePath,
-                              ),
-                              SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.width * 0.05),
-                              ImageDisplay(
-                                onTap: () async {
-                                  await showPopup(context, secondAnswer);
-                                  _totalQuestions += 1;
-                                  if (secondAnswer.isCorrect) {
-                                    _trueAnswers += 1;
-                                  }
-                                  setState(() {
-                                    id++;
-                                  });
-                                },
-                                screenSize: MediaQuery.of(context).size,
-                                path: secondAnswer.pictureResizePath,
-                              ),
-                            ],
-                          ),
-                          Text(question.description),
-                        ],
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text(
-                          'Error: ${snapshot.error}'); // Display error message
-                    } else if (snapshot.data == null && _totalQuestions > 0) {
-                      // 全ての質問が終わった場合
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(
-                              builder: (context) => GameResultPage(
-                                  trueAnswers: _trueAnswers,
-                                  totalQuestions: _totalQuestions)),
-                          (Route<dynamic> route) => false,
-                        );
-                      });
-                      return const CircularProgressIndicator();
-                    } else {
-                      return const CircularProgressIndicator();
-                    }
-                  },
-                ),
-              ],
-            );
+        child: FutureBuilder<Question?>(
+          future: _fetchQuestion(_currentQuestionId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else if (snapshot.data == null && _totalQuestions > 0) {
+              WidgetsBinding.instance
+                  .addPostFrameCallback((_) => _navigateToResultPage());
+              return const CircularProgressIndicator();
+            } else if (snapshot.hasData) {
+              final question = snapshot.data!;
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(question.title),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: question.answers
+                        .map((answer) => ImageDisplay(
+                              onTap: () => _handleAnswerTap(answer),
+                              screenSize: MediaQuery.of(context).size,
+                              path: answer.pictureResizePath,
+                            ))
+                        .toList(),
+                  ),
+                  Text(question.description),
+                ],
+              );
+            } else {
+              return const CircularProgressIndicator();
+            }
           },
         ),
       ),

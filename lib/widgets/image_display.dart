@@ -34,6 +34,10 @@ class _ImageDisplayState extends State<ImageDisplay> {
     }
   }
 
+  bool _isNetworkImage(String path) {
+    return path.startsWith('http://') || path.startsWith('https://');
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth =
@@ -46,14 +50,23 @@ class _ImageDisplayState extends State<ImageDisplay> {
     }
     return GestureDetector(
       onTap: widget.onTap == null ? null : widget.onTap!,
-      child: Image.network(
-        widget.path,
-        width: screenWidth * 0.4,
-        height: screenHeight * 0.4,
-        errorBuilder: (context, error, stackTrace) {
-          return const Center(child: Text('画像読み込みエラー'));
-        },
-      ),
+      child: _isNetworkImage(widget.path)
+          ? Image.network(
+              widget.path,
+              width: screenWidth * 0.4,
+              height: screenHeight * 0.4,
+              errorBuilder: (context, error, stackTrace) {
+                return const Center(child: Text('画像読み込みエラー'));
+              },
+            )
+          : Image.asset(
+              widget.path,
+              width: screenWidth * 0.4,
+              height: screenHeight * 0.4,
+              errorBuilder: (context, error, stackTrace) {
+                return const Center(child: Text('デバッグ画像読み込みエラー'));
+              },
+            ),
     );
   }
 }
