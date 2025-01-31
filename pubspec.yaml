@@ -66,6 +66,17 @@ flutter:
      - .env
      - assets/images/lottie_animation.json
      - assets/data.json
+     - assets/images/app_icon.jpeg
+     - assets/images/bats.png
+     - assets/images/bats_madebyai.png
+     - assets/images/bird.png
+     - assets/images/bird_madebyai.png
+     - assets/images/dolphin.png
+     - assets/images/dolphin_madebyai.png
+     - assets/images/cat.png
+     - assets/images/cat_madebyai.png
+     - assets/images/Lion.png
+     - assets/images/Lion_madebyai.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

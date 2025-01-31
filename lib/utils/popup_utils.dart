@@ -13,7 +13,10 @@ Future<void> showPopup(BuildContext context, Answer answer) async {
               answer.pictureTitle,
               textAlign: TextAlign.center,
             ),
-            content: Image.network(answer.pictureOriginalPath),
+            content: (answer.pictureOriginalPath.startsWith('http://') ||
+                    answer.pictureOriginalPath.startsWith('https://'))
+                ? Image.network(answer.pictureOriginalPath)
+                : Image.asset(answer.pictureOriginalPath),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
