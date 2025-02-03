@@ -1,0 +1,5 @@
+build/cache.dill.track.dill
+build/flutter_assets/kernel_blob.bin
+build/*.dill
+build/*.stamp
+.dart_tool/flutter_build/*.dill
