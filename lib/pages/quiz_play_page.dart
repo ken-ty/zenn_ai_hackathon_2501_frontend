@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 import '../models/quiz.dart';
 import '../utils/logger.dart';
@@ -52,7 +53,23 @@ class _QuizPlayPageState extends State<QuizPlayPage> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text(isCorrect ? '正解！' : 'おしい！'),
+        title: Row(
+          children: [
+            if (isCorrect)
+              Padding(
+                padding: const EdgeInsets.only(right: 12.0),
+                child: SizedBox(
+                  width: 100,
+                  height: 100,
+                  child: Lottie.asset(
+                    'assets/images/lottie_animation.json',
+                    repeat: false,
+                  ),
+                ),
+              ),
+            Text(isCorrect ? '正解！' : 'おしい！'),
+          ],
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
