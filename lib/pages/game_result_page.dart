@@ -25,15 +25,16 @@ class GameResultPage extends StatelessWidget {
               Text('お疲れ様でした！',
                   style: Theme.of(context).textTheme.headlineMedium,
                   textScaler: const TextScaler.linear(1.5)),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
               Text('正答数: $trueAnswers / $totalQuestions',
                   style: Theme.of(context).textTheme.headlineMedium,
                   textScaler: const TextScaler.linear(1.5)),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => GameListPage()),
+                    MaterialPageRoute(
+                        builder: (context) => const GameListPage()),
                     (Route<dynamic> route) => false,
                   );
                 },

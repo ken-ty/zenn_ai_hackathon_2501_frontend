@@ -22,7 +22,7 @@ Future<void> showPopup(BuildContext context, Answer answer) async {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Center(child: const Text('閉じる')),
+                child: const Center(child: Text('閉じる')),
               ),
             ],
           ),
@@ -37,5 +37,25 @@ Future<void> showPopup(BuildContext context, Answer answer) async {
           ),
       ]);
     },
+  );
+}
+
+void showSuccessSnackBar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.green,
+      behavior: SnackBarBehavior.floating,
+    ),
+  );
+}
+
+void showErrorSnackBar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red,
+      behavior: SnackBarBehavior.floating,
+    ),
   );
 }

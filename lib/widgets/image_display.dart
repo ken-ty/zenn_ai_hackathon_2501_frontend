@@ -49,7 +49,7 @@ class _ImageDisplayState extends State<ImageDisplay> {
       return const SizedBox();
     }
     return GestureDetector(
-      onTap: widget.onTap == null ? null : widget.onTap!,
+      onTap: widget.onTap,
       child: _isNetworkImage(widget.path)
           ? Image.network(
               widget.path,

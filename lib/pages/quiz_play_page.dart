@@ -1,25 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:zenn_ai_hackathon_2501_frontend/utils/logger.dart';
 
 import '../models/quiz.dart';
+import '../utils/logger.dart';
 
-class GamePage extends StatefulWidget {
-  final List<Quiz> quizzes;
-  final bool isHardMode;
+class QuizPlayPage extends StatefulWidget {
+  final Quiz quiz;
 
-  const GamePage({
+  const QuizPlayPage({
     super.key,
-    required this.quizzes,
-    required this.isHardMode,
+    required this.quiz,
   });
 
   @override
-  State<GamePage> createState() => _GamePageState();
+  State<QuizPlayPage> createState() => _QuizPlayPageState();
 }
 
-class _GamePageState extends State<GamePage> {
-  int _currentQuizIndex = 0;
-  int _correctAnswers = 0;
+class _QuizPlayPageState extends State<QuizPlayPage> {
   bool _hasAnswered = false;
   String? _selectedAnswer;
   Key _imageKey = UniqueKey();
@@ -27,16 +23,8 @@ class _GamePageState extends State<GamePage> {
   @override
   void initState() {
     super.initState();
-    AppLogger.info('ゲーム開始: ${widget.quizzes.length}問のクイズ');
+    AppLogger.info('クイズプレイ開始: ${widget.quiz.id}');
   }
-
-  @override
-  void dispose() {
-    _hasAnswered = true; // 非同期処理のキャンセル用フラグ
-    super.dispose();
-  }
-
-  Quiz get currentQuiz => widget.quizzes[_currentQuizIndex];
 
   Future<void> _handleAnswer(String answer) async {
     if (_hasAnswered) return;
@@ -46,82 +34,56 @@ class _GamePageState extends State<GamePage> {
       _selectedAnswer = answer;
     });
 
-    final isCorrect = currentQuiz.isCorrectAnswer(answer);
-    if (isCorrect) {
-      setState(() {
-        _correctAnswers++;
-      });
-    }
+    final isCorrect = widget.quiz.isCorrectAnswer(answer);
+    final message = isCorrect
+        ? [
+            '素晴らしい！正解です！👏',
+            'あなたの芸術的センスは素晴らしいですね。',
+            '作品の本質を見抜く目を持っていますね！',
+          ][DateTime.now().microsecond % 3]
+        : [
+            'おしい！不正解です。でも素敵な解釈ですね！',
+            '違いましたが、その解釈も面白い視点ですね！',
+            '惜しい！その発想も素晴らしいです！',
+          ][DateTime.now().microsecond % 3];
 
     if (!mounted) return;
-
-    final isLastQuiz = _currentQuizIndex == widget.quizzes.length - 1;
-    final message = isCorrect ? '正解！' : 'おしい！';
-
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text(message),
+        title: Text(isCorrect ? '正解！' : 'おしい！'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(isCorrect ? '素晴らしい判断です！' : 'その解釈も面白いですね！'),
+            Text(message),
             const SizedBox(height: 16),
             const Text('作者の解釈:', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(currentQuiz.authorInterpretation!),
+            Text(widget.quiz.authorInterpretation!),
             const SizedBox(height: 8),
             const Text('AIの解釈:', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(currentQuiz.aiInterpretation!),
+            Text(widget.quiz.aiInterpretation!),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              if (isLastQuiz) {
-                _showGameResult();
-              } else {
-                setState(() {
-                  _currentQuizIndex++;
-                  _hasAnswered = false;
-                  _selectedAnswer = null;
-                  _imageKey = UniqueKey();
-                });
-              }
+              Navigator.pop(context, isCorrect);
             },
-            child: Text(isLastQuiz ? '結果を見る' : '次へ'),
+            child: const Text('OK'),
           ),
         ],
       ),
     );
   }
 
-  void _showGameResult() {
-    if (!mounted) return;
-    Navigator.pop(context, _correctAnswers);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('クイズ ${_currentQuizIndex + 1}/${widget.quizzes.length}'),
-        actions: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: Text(
-                '正解数: $_correctAnswers',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ],
+        title: const Text('クイズ'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -133,7 +95,7 @@ class _GamePageState extends State<GamePage> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
-                  currentQuiz.imageUrl ??
+                  widget.quiz.imageUrl ??
                       'https://placehold.jp/3d4070/ffffff/600x800.png?text=NO%20IMAGE',
                   fit: BoxFit.contain,
                   headers: const {
@@ -186,7 +148,13 @@ class _GamePageState extends State<GamePage> {
                             size: 48,
                           ),
                           const SizedBox(height: 8),
-                          Text('画像を読み込めませんでした\nURL: ${currentQuiz.imageUrl}'),
+                          const Text('画像を読み込めませんでした'),
+                          const SizedBox(height: 4),
+                          Text(
+                            widget.quiz.imageUrl ?? 'URL not found',
+                            style: const TextStyle(fontSize: 12),
+                            textAlign: TextAlign.center,
+                          ),
                           const SizedBox(height: 8),
                           ElevatedButton.icon(
                             onPressed: () {
@@ -215,10 +183,10 @@ class _GamePageState extends State<GamePage> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            ...currentQuiz.interpretations.map((interpretation) {
+            ...widget.quiz.interpretations.map((interpretation) {
               final isSelected = _selectedAnswer == interpretation;
               final isCorrect =
-                  _hasAnswered && currentQuiz.isCorrectAnswer(interpretation);
+                  _hasAnswered && widget.quiz.isCorrectAnswer(interpretation);
               final isWrong = _hasAnswered && isSelected && !isCorrect;
 
               return Padding(

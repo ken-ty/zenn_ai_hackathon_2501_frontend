@@ -8,7 +8,7 @@ void main() {
     const assetPath = 'assets/images/lottie_animation.json';
 
     await tester.pumpWidget(
-      MaterialApp(
+      const MaterialApp(
         home: LottieAnimation(
           assetPath: assetPath,
         ),
@@ -29,7 +29,7 @@ void main() {
     const height = 100.0;
 
     await tester.pumpWidget(
-      MaterialApp(
+      const MaterialApp(
         home: LottieAnimation(
           assetPath: assetPath,
           width: width,
