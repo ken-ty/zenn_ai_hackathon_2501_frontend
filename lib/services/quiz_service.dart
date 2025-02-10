@@ -16,9 +16,13 @@ class QuizService {
   // クイズ一覧の取得
   Future<List<Quiz>> getQuizzes() async {
     try {
-      AppLogger.info('APIリクエスト開始: $baseUrl/quizzes');
+      // URLにタイムスタンプを追加してキャッシュを防ぐ
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final url = Uri.parse('$baseUrl/quizzes?t=$timestamp');
+      AppLogger.info('APIリクエスト開始: $url');
+
       final response = await http.get(
-        Uri.parse('$baseUrl/quizzes'),
+        url,
         headers: {
           'Accept': 'application/json',
         },
