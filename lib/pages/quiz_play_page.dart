@@ -59,7 +59,8 @@ class _QuizPlayPageState extends State<QuizPlayPage> {
           children: [
             Text(message),
             const SizedBox(height: 16),
-            const Text('作者の解釈:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text('投稿者の解釈:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             Text(widget.quiz.authorInterpretation!),
             const SizedBox(height: 8),
             const Text('AIの解釈:', style: TextStyle(fontWeight: FontWeight.bold)),

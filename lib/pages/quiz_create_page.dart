@@ -119,7 +119,7 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
                 Text('クイズID: ${response.id}'),
                 const SizedBox(height: 16),
                 const Text(
-                  '作者の解釈：',
+                  '投稿者の解釈：',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(response.authorInterpretation),
